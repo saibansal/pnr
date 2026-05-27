@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
-import PnrManagement from '../../PnrManagement.jsx'
-import Header from '../../Header.jsx'
+import PnrManagement from '../PnrManagement.jsx'
+import Header from '../Header.jsx'
 import './App.css'
 
 // A simple custom router to avoid needing react-router-dom

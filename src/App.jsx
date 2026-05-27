@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import './App.css';
-import Header from '../../Header';
-import { supabase } from '../../supabaseClient';
+import Header from '../Header';
+import { supabase } from '../supabaseClient';
 
 function App() {
   const [pnrInput, setPnrInput] = useState('');
