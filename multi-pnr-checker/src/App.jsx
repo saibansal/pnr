@@ -1,10 +1,30 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './App.css';
+import Header from '../../Header';
+import { supabase } from '../../supabaseClient';
 
 function App() {
   const [pnrInput, setPnrInput] = useState('');
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  // Automatically fetch PNRs from Supabase and populate the text area
+  useEffect(() => {
+    const fetchPnrsFromDb = async () => {
+      const { data, error } = await supabase
+        .from('pnrs')
+        .select('pnr_no');
+
+      if (error) {
+        console.error('Error fetching PNRs:', error);
+      } else if (data && data.length > 0) {
+        const pnrString = data.map(item => item.pnr_no).join(', ');
+        setPnrInput(pnrString);
+      }
+    };
+    
+    fetchPnrsFromDb();
+  }, []);
 
   // Note: There's no open public API for live Indian Railway PNR status without authentication/subscription.
   // This function simulates the API fetch. Replace the mock implementation below with a real API call 
@@ -56,11 +76,13 @@ function App() {
   };
 
   return (
-    <div className="container">
-      <header>
-        <h1>Railway PNR Status Tracker</h1>
-        <p>Check multiple PNRs at once</p>
-      </header>
+    <div style={{ fontFamily: 'sans-serif' }}>
+      <Header />
+      <div className="container" style={{ marginTop: '30px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+          <h1 style={{ marginTop: 0 }}>Railway PNR Status Tracker</h1>
+          <p>Check multiple PNRs at once</p>
+        </div>
 
       <div className="input-section">
         <label htmlFor="pnr-input">Enter PNR Numbers (comma-separated or one per line):</label>
@@ -90,14 +112,13 @@ function App() {
                 </div>
                 <div className="card-body">
                   <p><strong>Train:</strong> {result.trainName}</p>
-                  <p><strong>Route:</strong> {result.boardingStation} → {result.destinationStation}</p>
-                  <p><strong>Journey Date:</strong> {result.date}</p>
                 </div>
               </div>
             ))}
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 }
