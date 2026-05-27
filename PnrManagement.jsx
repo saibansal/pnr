@@ -193,9 +193,19 @@ const PnrManagement = () => {
     setUpdating(true);
     
     try {
-      // Here you would hook up the actual API request to the Railway Service
-      // Example: await checkExternalPnrStatus(pnrList);
+      const mockStatuses = ['Confirmed', 'RAC', 'WL/45', 'WL/12'];
       
+      // Simulate fetching from an external API and update each PNR in Supabase
+      const updatePromises = pnrList.map((pnr) => {
+        const newStatus = mockStatuses[Math.floor(Math.random() * mockStatuses.length)];
+        return supabase
+          .from('pnrs')
+          .update({ status: newStatus })
+          .eq('id', pnr.id);
+      });
+
+      await Promise.all(updatePromises);
+
       await fetchPnrs();
       
       // Only show the alert if the user explicitly clicked the button
