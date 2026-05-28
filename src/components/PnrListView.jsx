@@ -705,18 +705,7 @@ export default function PnrListView({
                     </div>
                   </div>
                   
-                    <table className="passengers-table">
-                    <thead>
-                      <tr>
-                        <th>S. No</th>
-                        <th>Passenger Details</th>
-                        <th>Sai Connect ID</th>
-                        <th>Current Status</th>
-                        <th>Booking Status</th>
-                        <th>Coach/Berth</th>
-                      </tr>
-                    </thead>
-                    <tbody>
+                    <div className="passengers-list-container">
                       {record.passengers && record.passengers.map((p, idx) => {
                         const currentClean = cleanCurrentStatus(p.current_status);
                         const bookingClean = cleanBookingStatus(p.booking_status);
@@ -725,38 +714,47 @@ export default function PnrListView({
                         const hasCoach = p.coach && p.coach !== 'WL' && p.coach !== 'N/A' && p.coach !== '0';
                         
                         return (
-                          <tr key={idx}>
-                            <td className="passenger-sno">{p.passenger_number}</td>
-                            <td className="passenger-details-cell">
-                              <strong style={{ display: 'block', color: 'var(--text-primary)' }}>{p.name || '-'}</strong>
-                              {(p.age || p.gender) && (
-                                <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                                  Age: {p.age || '-'} | {p.gender || '-'}
+                          <div key={idx} className="passenger-row-card">
+                            <div className="passenger-row-header">
+                              <div className="passenger-row-left">
+                                <span className="passenger-badge">P{p.passenger_number}</span>
+                                <span className="passenger-name">{p.name || 'Passenger'}</span>
+                                {(p.age || p.gender) && (
+                                  <span className="passenger-age-gender">
+                                    ({p.age || '-'}{p.gender ? `, ${p.gender}` : ''})
+                                  </span>
+                                )}
+                              </div>
+                              <div className="passenger-row-right">
+                                <span className={`status-text ${
+                                  currentClean.toUpperCase().includes('CNF') 
+                                    ? 'status-cnf' 
+                                    : 'status-wl'
+                                }`}>
+                                  {currentClean}
                                 </span>
-                              )}
-                            </td>
-                            <td className="passenger-sai-id">{p.sai_connect_id || '-'}</td>
-                            <td className="passenger-current">
-                              <span className={`status-text ${
-                                currentClean.toUpperCase().includes('CNF') 
-                                  ? 'status-cnf' 
-                                  : 'status-wl'
-                              }`}>
-                                {currentClean}
-                              </span>
-                              {chance && <span className="chance-text">{chance}</span>}
-                            </td>
-                            <td className="passenger-booking">
-                              {bookingClean}
-                            </td>
-                            <td className="passenger-coach">
-                              {hasCoach ? `${p.coach}/${p.berth}` : '-'}
-                            </td>
-                          </tr>
+                                {chance && <span className="chance-badge">{chance}</span>}
+                              </div>
+                            </div>
+                            
+                            <div className="passenger-row-details">
+                              <div className="passenger-detail-item">
+                                <span className="detail-label">Sai Connect ID</span>
+                                <span className="detail-value">{p.sai_connect_id || '-'}</span>
+                              </div>
+                              <div className="passenger-detail-item">
+                                <span className="detail-label">Booking Status</span>
+                                <span className="detail-value">{bookingClean}</span>
+                              </div>
+                              <div className="passenger-detail-item">
+                                <span className="detail-label">Coach/Berth</span>
+                                <span className="detail-value">{hasCoach ? `${p.coach}/${p.berth}` : '-'}</span>
+                              </div>
+                            </div>
+                          </div>
                         );
                       })}
-                    </tbody>
-                  </table>
+                    </div>
                 </div>
               </div>
 

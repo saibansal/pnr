@@ -224,7 +224,9 @@ export default function AddPnrView({ newPnr, setNewPnr, handleAddPnr, loading })
                       <div>
                         <strong className="passenger-item-name">{p.name}</strong>
                         <div className="passenger-item-meta">
-                          <span>Age: {p.age}</span> • <span>Gender: {p.gender}</span> • <span>Sai Connect ID: {p.saiConnectId}</span>
+                          <span className="passenger-meta-badge">Age: {p.age}</span>
+                          <span className="passenger-meta-badge">Gender: {p.gender}</span>
+                          <span className="passenger-meta-badge">Sai Connect ID: {p.saiConnectId}</span>
                         </div>
                       </div>
                     </div>
