@@ -15,6 +15,7 @@ import { fetchPNRStatus } from './rapidapi';
 import Navbar from './components/Navbar';
 import AddPnrView from './components/AddPnrView';
 import PnrListView from './components/PnrListView';
+import ImportModal from './components/ImportModal';
 
 export default function App() {
   // Application State
@@ -27,6 +28,7 @@ export default function App() {
   const [refreshingPnr, setRefreshingPnr] = useState(null);
   const [selectedRawResponse, setSelectedRawResponse] = useState(null);
   const [toasts, setToasts] = useState([]);
+  const [showImportModal, setShowImportModal] = useState(false);
 
   // DB client configuration check
   const [isDbConnected, setIsDbConnected] = useState(hasAnySupabaseConfig());
@@ -181,6 +183,70 @@ export default function App() {
     }
   };
 
+  // Bulk import PNRs sequentially
+  const handleBulkImport = async (pnrTasks, onProgress) => {
+    let importedCount = 0;
+    let failedCount = 0;
+
+    for (let i = 0; i < pnrTasks.length; i++) {
+      const task = pnrTasks[i];
+      const cleanNum = task.pnr_no.replace(/\D/g, '').trim();
+
+      if (cleanNum.length !== 10) {
+        failedCount++;
+        continue;
+      }
+
+      // Check duplicate
+      if (pnrList.some(r => r.pnr_no === cleanNum)) {
+        continue;
+      }
+
+      if (onProgress) {
+        onProgress(i + 1, pnrTasks.length, cleanNum);
+      }
+
+      let recordToInsert;
+      try {
+        const normalizedData = await fetchPNRStatus(cleanNum, false);
+        recordToInsert = {
+          ...normalizedData,
+          state: task.state || '',
+          district: task.district || '',
+          city: task.city || ''
+        };
+      } catch (err) {
+        console.error(`Bulk import query failed for ${cleanNum}:`, err);
+        // Fallback to placeholder record so it's not lost
+        recordToInsert = {
+          pnr_no: cleanNum,
+          train_no: 'N/A',
+          train_name: 'Unchecked PNR',
+          date_of_journey: 'N/A',
+          from_station: 'N/A',
+          to_station: 'N/A',
+          class_code: 'N/A',
+          passengers: [],
+          last_status: 'Unchecked',
+          raw_response: { error: err.message || 'API Limit / Connection Error' },
+          state: task.state || '',
+          district: task.district || '',
+          city: task.city || ''
+        };
+      }
+
+      try {
+        const inserted = await db.insert(recordToInsert);
+        setPnrList(prev => [inserted, ...prev]);
+        importedCount++;
+      } catch (dbErr) {
+        console.error(`Database insertion failed for PNR ${cleanNum}:`, dbErr);
+        failedCount++;
+      }
+    }
+
+    return { importedCount, failedCount };
+  };
 
   // Single record manual refresh action
   const handleRefreshPnr = async (pnrNo) => {
@@ -292,6 +358,7 @@ export default function App() {
           currentView={currentView} 
           setCurrentView={setCurrentView} 
           pnrCount={pnrList.length} 
+          onImportClick={() => setShowImportModal(true)}
         />
 
         {/* Main Content Router */}
@@ -336,6 +403,15 @@ export default function App() {
             </div>
           </div>
         )}
+
+        {/* Import Modal Popup */}
+        <ImportModal 
+          isOpen={showImportModal}
+          onClose={() => setShowImportModal(false)}
+          handleBulkImport={handleBulkImport}
+          pnrList={pnrList}
+          setCurrentView={setCurrentView}
+        />
 
         {/* Floating Notifications Toast elements */}
         <div className="toast-container">

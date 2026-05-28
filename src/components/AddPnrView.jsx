@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Train, Plus, RefreshCw, Info, ShieldCheck, RefreshCcw, MapPin } from 'lucide-react';
 import { locationData } from '../utils/locationData';
 
-
 export default function AddPnrView({ newPnr, setNewPnr, handleAddPnr, loading }) {
   const [selectedState, setSelectedState] = useState('');
   const [selectedDistrict, setSelectedDistrict] = useState('');

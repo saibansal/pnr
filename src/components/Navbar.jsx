@@ -1,7 +1,7 @@
 import React from 'react';
-import { Plus, Database } from 'lucide-react';
+import { Plus, Database, Upload } from 'lucide-react';
 
-export default function Navbar({ currentView, setCurrentView, pnrCount }) {
+export default function Navbar({ currentView, setCurrentView, pnrCount, onImportClick }) {
   return (
     <div className="navbar-wrapper">
       <nav className="view-navbar glass">
@@ -25,6 +25,14 @@ export default function Navbar({ currentView, setCurrentView, pnrCount }) {
               {pnrCount}
             </span>
           )}
+        </button>
+        <button 
+          onClick={onImportClick} 
+          className="nav-tab"
+          title="Import PNRs from CSV or PDF"
+        >
+          <Upload size={18} />
+          <span>Import</span>
         </button>
       </nav>
     </div>
