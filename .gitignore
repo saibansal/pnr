@@ -1,4 +1,4 @@
-# logs
+# Logs
 logs
 *.log
 npm-debug.log*
@@ -7,23 +7,34 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# Dependency directories
+node_modules/
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
+# Build outputs
+dist/
+dist-ssr/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+
+# IDEs and editors
+.vscode/
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-.vercel
-.env*.local 
 
-#Ignore vscode AI rules
+# OS files
+.DS_Store
+Thumbs.db
+
+# VS Code AI rules
+.github/instructions/codacy.instructions.md
 .github\instructions\codacy.instructions.md
