@@ -13,7 +13,6 @@ import {
   Edit2,
   X,
   ChevronDown,
-  Printer,
   Download
 } from 'lucide-react';
 import { locationData } from '../utils/locationData';
@@ -387,15 +386,6 @@ export default function PnrListView({
     addToast('Excel (CSV) report downloaded successfully!', 'success');
   };
 
-  // Export filtered PNR list to PDF (Triggers browser printing with customized print layout)
-  const handleExportPDF = () => {
-    if (filteredList.length === 0) {
-      addToast('No PNR records to print!', 'error');
-      return;
-    }
-    window.print();
-  };
-
   return (
     <div className="pnr-list-container animate-fade-in">
       
@@ -590,15 +580,6 @@ export default function PnrListView({
               >
                 <Download size={12} />
                 Excel
-              </button>
-              <button 
-                className="btn btn-secondary" 
-                style={{ padding: '6px 12px', fontSize: '0.8rem', borderRadius: '20px', display: 'flex', gap: '6px', alignItems: 'center' }}
-                onClick={handleExportPDF}
-                title="Export to PDF"
-              >
-                <Printer size={12} />
-                PDF
               </button>
             </>
           )}
