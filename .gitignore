@@ -38,3 +38,6 @@ Thumbs.db
 # VS Code AI rules
 .github/instructions/codacy.instructions.md
 .github\instructions\codacy.instructions.md
+
+.vercel
+.env*.local
