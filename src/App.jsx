@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import logo from '../src/logo.png'; // Correct (Default Import)
+
 import { 
   Plus, 
   RefreshCw, 
@@ -9,13 +11,11 @@ import {
   AlertTriangle, 
   CheckCircle2, 
   Info, 
-  SlidersHorizontal, 
   Wifi, 
   WifiOff, 
   Calendar, 
   ArrowRight, 
   X, 
-  Settings,
   Clipboard,
   ExternalLink,
   MapPin,
@@ -102,20 +102,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [refreshingPnr, setRefreshingPnr] = useState(null);
   const [selectedRawResponse, setSelectedRawResponse] = useState(null);
-  const [showSettings, setShowSettings] = useState(false);
   const [toasts, setToasts] = useState([]);
-  
-  // Developer Modes (saved in local storage to persist between reloads)
-  const [useMockMode, setUseMockMode] = useState(() => {
-    return localStorage.getItem('dev_mock_mode') === 'true';
-  });
-  
-  const [dbConfig, setDbConfig] = useState({
-    url: localStorage.getItem('override_supabase_url') || '',
-    key: localStorage.getItem('override_supabase_anon_key') || '',
-    apiKey: localStorage.getItem('override_rapidapi_key') || '',
-    apiHost: localStorage.getItem('override_rapidapi_host') || '',
-  });
 
   // DB client configuration check
   const [isDbConnected, setIsDbConnected] = useState(hasAnySupabaseConfig());
@@ -224,49 +211,7 @@ export default function App() {
     loadPnrs();
   }, [isDbConnected]);
 
-  // Handle mock mode toggle changes
-  const toggleMockMode = () => {
-    const nextVal = !useMockMode;
-    setUseMockMode(nextVal);
-    localStorage.setItem('dev_mock_mode', String(nextVal));
-    addToast(nextVal ? 'Switched to Developer Mock Mode' : 'Switched to Real API Mode', 'info');
-  };
-
-  // Save dynamically entered settings
-  const handleSaveSettings = (e) => {
-    e.preventDefault();
-    
-    // Save to localStorage
-    if (dbConfig.url) localStorage.setItem('override_supabase_url', dbConfig.url.trim());
-    else localStorage.removeItem('override_supabase_url');
-
-    if (dbConfig.key) localStorage.setItem('override_supabase_anon_key', dbConfig.key.trim());
-    else localStorage.removeItem('override_supabase_anon_key');
-
-    if (dbConfig.apiKey) localStorage.setItem('override_rapidapi_key', dbConfig.apiKey.trim());
-    else localStorage.removeItem('override_rapidapi_key');
-
-    if (dbConfig.apiHost) localStorage.setItem('override_rapidapi_host', dbConfig.apiHost.trim());
-    else localStorage.removeItem('override_rapidapi_host');
-
-    // Update connection flags
-    setIsDbConnected(hasAnySupabaseConfig());
-    setShowSettings(false);
-    addToast('Developer configuration settings saved!', 'success');
-  };
-
-  // Reset dynamically entered credentials
-  const handleClearSettings = () => {
-    localStorage.removeItem('override_supabase_url');
-    localStorage.removeItem('override_supabase_anon_key');
-    localStorage.removeItem('override_rapidapi_key');
-    localStorage.removeItem('override_rapidapi_host');
-    
-    setDbConfig({ url: '', key: '', apiKey: '', apiHost: '' });
-    setIsDbConnected(hasAnySupabaseConfig());
-    setShowSettings(false);
-    addToast('Custom settings cleared. Using environment variables.', 'info');
-  };
+  // Settings and mock mode handlers removed
 
   // Form Submission to query and add a new PNR
   const handleAddPnr = async (e) => {
@@ -290,7 +235,7 @@ export default function App() {
     addToast(`Querying PNR ${cleanNum}...`, 'info');
 
     try {
-      const normalizedData = await fetchPNRStatus(cleanNum, useMockMode);
+      const normalizedData = await fetchPNRStatus(cleanNum, false);
       const inserted = await db.insert(normalizedData);
       
       setPnrList(prev => [inserted, ...prev]);
@@ -310,7 +255,7 @@ export default function App() {
     addToast(`Refreshing status for PNR ${pnrNo}...`, 'info');
 
     try {
-      const refreshedData = await fetchPNRStatus(pnrNo, useMockMode);
+      const refreshedData = await fetchPNRStatus(pnrNo, false);
       const updated = await db.update(pnrNo, {
         train_no: refreshedData.train_no,
         train_name: refreshedData.train_name,
@@ -399,55 +344,35 @@ export default function App() {
   });
 
   return (
-    <div className="app-container">
-      
+    <div className="app-wrapper">
       {/* Header bar */}
-      <header>
-        <div className="logo-section">
-          <span className="logo-icon">🎫</span>
-          <div>
-            <h1>RailStatus</h1>
-            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Premium PNR Dashboard</p>
+      <header className="app-header">
+        <div className="header-content">
+          <div className="logo-section">
+            <span className="logo-icon"><img src={logo} alt="Sri Sathya Sai Sewa Organisation Punjab" /></span>
+            <div>
+              <h1>Sri Sathya Sai Sewa Organisation Punjab</h1>
+              {/* <p style={{ fontSize: '0.8rem', color: '#fff' }}>Sewadal PNR Dash Board</p> */}
+            </div>
           </div>
-        </div>
-
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-          {/* Mock Mode Toggle Switch */}
-          <div className="toggle-container">
-            <span style={{ fontSize: '0.8rem', color: useMockMode ? 'var(--secondary)' : 'var(--text-secondary)' }}>
-              {useMockMode ? 'Mock Simulator On' : 'Real API Active'}
-            </span>
-            <label className="switch">
-              <input type="checkbox" checked={useMockMode} onChange={toggleMockMode} />
-              <span className="slider"></span>
-            </label>
-          </div>
-
-          {/* Settings Trigger */}
-          <button className="btn btn-secondary" style={{ padding: '8px 12px' }} onClick={() => setShowSettings(true)}>
-            <Settings size={18} />
-          </button>
         </div>
       </header>
 
+      <div className="app-container">
+
       {/* Connection Mode Announcement Banner */}
       {!isDbConnected && (
-        <div className="glass" style={{ padding: '12px 18px', borderLeft: '4px solid var(--color-rac)', borderRadius: '8px', marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <AlertTriangle size={18} style={{ color: 'var(--color-rac)' }} />
-            <span style={{ fontSize: '0.85rem' }}>
-              <strong>Offline DB Fallback:</strong> Supabase env details not loaded. Running in local storage browser database.
-            </span>
-          </div>
-          <button className="btn btn-secondary" style={{ fontSize: '0.75rem', padding: '6px 12px' }} onClick={() => setShowSettings(true)}>
-            Configure Connection
-          </button>
+        <div className="glass" style={{ padding: '12px 18px', borderLeft: '4px solid var(--color-rac)', borderRadius: '8px', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <AlertTriangle size={18} style={{ color: 'var(--color-rac)', flexShrink: 0 }} />
+          <span style={{ fontSize: '0.85rem' }}>
+            <strong>Offline DB Fallback:</strong> Supabase env details not loaded. Running in local storage browser database.
+          </span>
         </div>
       )}
 
       {/* Main Adding Form */}
       <section style={{ maxWidth: '640px', margin: '0 auto 3rem auto', textAlign: 'center' }}>
-        <h2 style={{ fontSize: '1.75rem', marginBottom: '1rem', fontFamily: 'var(--font-display)', fontWeight: 800 }}>
+        <h2 style={{ fontSize: '1.75rem', color:'#fff', marginBottom: '1rem', fontFamily: 'var(--font-display)', fontWeight: 800 }}>
           Check IRCTC PNR Status
         </h2>
         
@@ -716,78 +641,7 @@ export default function App() {
         </div>
       )}
 
-      {/* Configuration Settings Modal Overlay */}
-      {showSettings && (
-        <div className="modal-overlay" onClick={() => setShowSettings(false)}>
-          <div className="glass modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '500px' }}>
-            <div className="modal-header">
-              <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.2rem' }}>
-                <SlidersHorizontal size={20} /> Connection Settings
-              </h3>
-              <button className="close-btn" onClick={() => setShowSettings(false)}>&times;</button>
-            </div>
-            
-            <form onSubmit={handleSaveSettings}>
-              <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                  Provide variables dynamically if you want to override local `.env` setups. Kept only in browser memory.
-                </p>
-
-                <div className="wizard-inputs" style={{ marginBottom: 0 }}>
-                  <label>
-                    Supabase Project URL
-                    <input 
-                      type="text" 
-                      placeholder="https://xxxxxx.supabase.co" 
-                      value={dbConfig.url}
-                      onChange={(e) => setDbConfig({...dbConfig, url: e.target.value})}
-                    />
-                  </label>
-
-                  <label>
-                    Supabase Anon Key
-                    <input 
-                      type="password" 
-                      placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." 
-                      value={dbConfig.key}
-                      onChange={(e) => setDbConfig({...dbConfig, key: e.target.value})}
-                    />
-                  </label>
-
-                  <label>
-                    RapidAPI Key (Preset active)
-                    <input 
-                      type="password" 
-                      placeholder="xxxx-rapidapi-key-xxxx" 
-                      value={dbConfig.apiKey}
-                      onChange={(e) => setDbConfig({...dbConfig, apiKey: e.target.value})}
-                    />
-                  </label>
-
-                  <label>
-                    RapidAPI Host
-                    <input 
-                      type="text" 
-                      placeholder="irctc-indian-railway-pnr-status.p.rapidapi.com" 
-                      value={dbConfig.apiHost}
-                      onChange={(e) => setDbConfig({...dbConfig, apiHost: e.target.value})}
-                    />
-                  </label>
-                </div>
-              </div>
-
-              <div className="pnr-card-footer" style={{ justifyContent: 'flex-end', gap: '10px' }}>
-                <button type="button" className="btn btn-secondary" onClick={handleClearSettings}>
-                  Clear Overrides
-                </button>
-                <button type="submit" className="btn btn-primary">
-                  Save Changes
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      {/* Settings Modal removed */}
 
       {/* Floating Notifications Toast elements */}
       <div className="toast-container">
@@ -800,7 +654,7 @@ export default function App() {
           </div>
         ))}
       </div>
-
     </div>
+  </div>
   );
 }
