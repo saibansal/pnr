@@ -136,7 +136,7 @@ export default function App() {
   }, [isDbConnected]);
 
   // Form Submission to query and add a new PNR
-  const handleAddPnr = async (e) => {
+  const handleAddPnr = async (e, stateVal, districtVal, cityVal) => {
     e.preventDefault();
     const cleanNum = newPnr.replace(/\D/g, '').trim();
     
@@ -159,7 +159,13 @@ export default function App() {
 
     try {
       const normalizedData = await fetchPNRStatus(cleanNum, false);
-      const inserted = await db.insert(normalizedData);
+      const recordToInsert = {
+        ...normalizedData,
+        state: stateVal,
+        district: districtVal,
+        city: cityVal
+      };
+      const inserted = await db.insert(recordToInsert);
       
       setPnrList(prev => [inserted, ...prev]);
       setNewPnr('');
@@ -174,6 +180,7 @@ export default function App() {
       setLoading(false);
     }
   };
+
 
   // Single record manual refresh action
   const handleRefreshPnr = async (pnrNo) => {
@@ -228,6 +235,23 @@ export default function App() {
     } catch (err) {
       console.error(err);
       addToast(`Deletion failed: ${err.message}`, 'error');
+    }
+  };
+
+  // Edit location metadata action
+  const handleUpdateLocation = async (pnrNo, newState, newDistrict, newCity) => {
+    try {
+      const updated = await db.update(pnrNo, {
+        state: newState,
+        district: newDistrict,
+        city: newCity,
+        updated_at: new Date().toISOString()
+      });
+      setPnrList(prev => prev.map(item => item.pnr_no === pnrNo ? updated : item));
+      addToast(`Updated location for PNR ${pnrNo}!`, 'success');
+    } catch (err) {
+      console.error(err);
+      addToast(`Update failed: ${err.message}`, 'error');
     }
   };
 
@@ -286,6 +310,7 @@ export default function App() {
               handleRefreshPnr={handleRefreshPnr}
               handleRefreshAll={handleRefreshAll}
               handleDeletePnr={handleDeletePnr}
+              handleUpdateLocation={handleUpdateLocation}
               setSelectedRawResponse={setSelectedRawResponse}
               addToast={addToast}
             />

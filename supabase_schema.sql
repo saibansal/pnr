@@ -52,3 +52,11 @@ CREATE POLICY "Allow anonymous update"
 CREATE POLICY "Allow anonymous delete" 
     ON pnr_records FOR DELETE 
     USING (true);
+
+-- Migration SQL to add location fields to an existing pnr_records table:
+-- Run this in your Supabase SQL Editor if you already created the table previously.
+-- 
+-- ALTER TABLE pnr_records ADD COLUMN IF NOT EXISTS state VARCHAR(100);
+-- ALTER TABLE pnr_records ADD COLUMN IF NOT EXISTS district VARCHAR(100);
+-- ALTER TABLE pnr_records ADD COLUMN IF NOT EXISTS city VARCHAR(100);
+

@@ -1080,3 +1080,249 @@ input:checked + .slider:before {
   }
 }
 
+/* Location Metadata Form Layout */
+.pnr-location-form {
+  padding: 2.25rem;
+  max-width: 640px;
+  margin: 0 auto 3rem auto;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px 0 rgba(15, 23, 42, 0.08);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.select-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.select-wrapper select {
+  width: 100%;
+  padding: 14px 32px 14px 44px;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 12px;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.select-wrapper select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+.select-wrapper select:disabled {
+  background: rgba(15, 23, 42, 0.03);
+  color: var(--text-muted);
+  cursor: not-allowed;
+  border-color: rgba(15, 23, 42, 0.06);
+}
+
+.select-wrapper select:disabled + .select-icon {
+  color: var(--text-muted);
+  opacity: 0.5;
+}
+
+.select-icon {
+  position: absolute;
+  left: 14px;
+  color: var(--text-secondary);
+  pointer-events: none;
+  transition: all 0.2s ease;
+}
+
+.select-wrapper::after {
+  content: "▼";
+  font-size: 0.6rem;
+  position: absolute;
+  right: 14px;
+  color: var(--text-secondary);
+  pointer-events: none;
+}
+
+.form-submit-btn {
+  width: 100%;
+  padding: 14px;
+  font-size: 1rem;
+  justify-content: center;
+}
+
+/* Card Location Metadata Pin */
+.card-location-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+/* Location Filters List View Controls */
+.location-filters-wrapper {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filter-select {
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  background: rgba(255, 255, 255, 0.85);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.filter-select:focus {
+  border-color: var(--primary);
+  background: #ffffff;
+}
+
+.filter-select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Responsive location form tweaks */
+@media (max-width: 640px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  .pnr-location-form {
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .location-filters-wrapper {
+    width: 100%;
+  }
+  .filter-select {
+    flex: 1;
+  }
+}
+
+/* Grouped District Layouts */
+.district-groups-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2.25rem;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.district-group-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.district-group-header {
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  border-left: 5px solid var(--primary);
+  border-radius: 12px;
+  background: var(--card-bg);
+  box-shadow: 0 4px 15px rgba(15, 23, 42, 0.04);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.district-group-header:hover {
+  background: var(--card-hover-bg);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.08);
+}
+
+.district-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.district-header-left h3 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+  font-family: var(--font-display);
+}
+
+.district-pin-icon {
+  color: var(--primary);
+}
+
+.district-count-badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  background: var(--primary-glow);
+  color: var(--primary);
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.collapse-toggle-arrow {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.collapse-toggle-arrow.collapsed {
+  transform: rotate(-90deg);
+}
+
+.district-grid-wrapper {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+  opacity: 1;
+}
+
+.district-grid-wrapper.collapsed {
+  grid-template-rows: 0fr;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.district-grid-wrapper > div {
+  overflow: hidden;
+}
+
+
+
