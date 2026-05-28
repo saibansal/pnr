@@ -317,6 +317,10 @@ export default function PnrListView({
       'District',
       'City',
       'Passenger S.No',
+      'Passenger Name',
+      'Passenger Age',
+      'Passenger Gender',
+      'Sai Connect ID',
       'Current Status',
       'Booking Status',
       'Coach',
@@ -345,6 +349,10 @@ export default function PnrListView({
         record.passengers.forEach(p => {
           const passengerFields = [
             `"${String(p.passenger_number || '')}"`,
+            `"${String(p.name || '').replace(/"/g, '""')}"`,
+            `"${String(p.age || '')}"`,
+            `"${String(p.gender || '')}"`,
+            `"${String(p.sai_connect_id || '').replace(/"/g, '""')}"`,
             `"${String(p.current_status || '').replace(/"/g, '""')}"`,
             `"${String(p.booking_status || '').replace(/"/g, '""')}"`,
             `"${String(p.coach || '').replace(/"/g, '""')}"`,
@@ -357,7 +365,7 @@ export default function PnrListView({
           rows.push([...baseFields, ...passengerFields, ...footerFields].join(','));
         });
       } else {
-        const emptyPassengerFields = ['""', '""', '""', '""', '""'];
+        const emptyPassengerFields = ['""', '""', '""', '""', '""', '""', '""', '""', '""'];
         const footerFields = [
           `"${String(record.last_status || '').replace(/"/g, '""')}"`,
           `"${String(record.updated_at || record.created_at || '').replace(/"/g, '""')}"`
@@ -697,10 +705,12 @@ export default function PnrListView({
                     </div>
                   </div>
                   
-                  <table className="passengers-table">
+                    <table className="passengers-table">
                     <thead>
                       <tr>
                         <th>S. No</th>
+                        <th>Passenger Details</th>
+                        <th>Sai Connect ID</th>
                         <th>Current Status</th>
                         <th>Booking Status</th>
                         <th>Coach/Berth</th>
@@ -717,6 +727,15 @@ export default function PnrListView({
                         return (
                           <tr key={idx}>
                             <td className="passenger-sno">{p.passenger_number}</td>
+                            <td className="passenger-details-cell">
+                              <strong style={{ display: 'block', color: 'var(--text-primary)' }}>{p.name || '-'}</strong>
+                              {(p.age || p.gender) && (
+                                <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                                  Age: {p.age || '-'} | {p.gender || '-'}
+                                </span>
+                              )}
+                            </td>
+                            <td className="passenger-sai-id">{p.sai_connect_id || '-'}</td>
                             <td className="passenger-current">
                               <span className={`status-text ${
                                 currentClean.toUpperCase().includes('CNF') 

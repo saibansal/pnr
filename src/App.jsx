@@ -138,7 +138,7 @@ export default function App() {
   }, [isDbConnected]);
 
   // Form Submission to query and add a new PNR
-  const handleAddPnr = async (e, stateVal, districtVal, cityVal) => {
+  const handleAddPnr = async (e, stateVal, districtVal, cityVal, passengerDetails = []) => {
     e.preventDefault();
     const cleanNum = newPnr.replace(/\D/g, '').trim();
     
@@ -161,8 +161,37 @@ export default function App() {
 
     try {
       const normalizedData = await fetchPNRStatus(cleanNum, false);
+      
+      // Map passenger details to passengers array
+      let finalPassengers = (normalizedData.passengers || []).map((p, idx) => {
+        const details = passengerDetails[idx] || {};
+        return {
+          ...p,
+          name: details.name || '',
+          age: details.age || '',
+          gender: details.gender || '',
+          sai_connect_id: details.saiConnectId || ''
+        };
+      });
+
+      // If API returned empty passenger details, fallback/create from details
+      if (finalPassengers.length === 0 && passengerDetails.length > 0) {
+        finalPassengers = passengerDetails.map((details, idx) => ({
+          passenger_number: idx + 1,
+          booking_status: 'Unchecked',
+          current_status: 'Unchecked',
+          coach: 'N/A',
+          berth: 'N/A',
+          name: details.name || '',
+          age: details.age || '',
+          gender: details.gender || '',
+          sai_connect_id: details.saiConnectId || ''
+        }));
+      }
+
       const recordToInsert = {
         ...normalizedData,
+        passengers: finalPassengers,
         state: stateVal,
         district: districtVal,
         city: cityVal
@@ -255,6 +284,22 @@ export default function App() {
 
     try {
       const refreshedData = await fetchPNRStatus(pnrNo, false);
+
+      // Preserve existing passenger details
+      const existingRecord = pnrList.find(r => r.pnr_no === pnrNo);
+      const existingPassengers = existingRecord ? (existingRecord.passengers || []) : [];
+
+      const mergedPassengers = refreshedData.passengers.map((p, idx) => {
+        const existingP = existingPassengers.find(ep => ep.passenger_number === p.passenger_number) || existingPassengers[idx];
+        return {
+          ...p,
+          name: existingP ? (existingP.name || '') : '',
+          age: existingP ? (existingP.age || '') : '',
+          gender: existingP ? (existingP.gender || '') : '',
+          sai_connect_id: existingP ? (existingP.sai_connect_id || '') : ''
+        };
+      });
+
       const updated = await db.update(pnrNo, {
         train_no: refreshedData.train_no,
         train_name: refreshedData.train_name,
@@ -262,7 +307,7 @@ export default function App() {
         from_station: refreshedData.from_station,
         to_station: refreshedData.to_station,
         class_code: refreshedData.class_code,
-        passengers: refreshedData.passengers,
+        passengers: mergedPassengers,
         last_status: refreshedData.last_status,
         raw_response: refreshedData.raw_response,
         updated_at: new Date().toISOString()

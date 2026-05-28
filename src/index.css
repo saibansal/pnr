@@ -549,10 +549,12 @@ input:checked + .slider:before {
   text-align: left;
 }
 
-.passengers-table th:nth-child(1) { width: 12%; }
-.passengers-table th:nth-child(2) { width: 38%; }
-.passengers-table th:nth-child(3) { width: 35%; }
-.passengers-table th:nth-child(4) { width: 15%; text-align: right; }
+.passengers-table th:nth-child(1) { width: 8%; }
+.passengers-table th:nth-child(2) { width: 32%; }
+.passengers-table th:nth-child(3) { width: 18%; }
+.passengers-table th:nth-child(4) { width: 16%; }
+.passengers-table th:nth-child(5) { width: 14%; }
+.passengers-table th:nth-child(6) { width: 12%; text-align: right; }
 
 .passengers-table td {
   padding: 10px 4px 10px 0;
@@ -1673,6 +1675,123 @@ input:checked + .slider:before {
 
 .text-muted {
   color: var(--text-secondary);
+}
+
+/* Passenger Names Section in Add PNR Form */
+.passenger-names-section {
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+  padding-top: 1.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 2rem;
+  text-align: left;
+}
+
+.form-section-title {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.btn-add-passenger {
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.empty-passengers-placeholder {
+  padding: 2rem;
+  text-align: center;
+  border: 1px dashed rgba(15, 23, 42, 0.12);
+  border-radius: 12px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.added-passengers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.passenger-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: rgba(255, 255, 255, 0.6);
+  transition: all 0.2s ease;
+}
+
+.passenger-list-item:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(99, 102, 241, 0.2);
+}
+
+.passenger-item-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.passenger-item-sno {
+  font-family: var(--font-display);
+  font-weight: 800;
+  color: var(--primary);
+  font-size: 1rem;
+  background: rgba(99, 102, 241, 0.08);
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.passenger-item-name {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.passenger-item-meta {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.passenger-item-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.passenger-modal-content {
+  max-width: 500px !important;
+}
+
+.passenger-card-body-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.btn-remove-passenger-card {
+  background: transparent;
+  border: none;
+  color: var(--color-wl);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.btn-remove-passenger-card:hover {
+  background: rgba(225, 29, 72, 0.08);
 }
 
 
